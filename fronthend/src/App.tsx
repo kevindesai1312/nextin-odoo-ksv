@@ -37,7 +37,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-// 受保护的路由组件
+// Protected route component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
   
