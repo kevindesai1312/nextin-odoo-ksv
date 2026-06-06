@@ -15,6 +15,7 @@ const quotationSchema = new mongoose.Schema({
   vendorName: String,
   submittedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   items: [quotationItemSchema],
+  attachments: [{ name: String, url: String }],
   status: { type: String, enum: ['Draft', 'Submitted', 'Selected', 'Rejected'], default: 'Draft' },
   taxGstPercent: { type: Number, required: true },
   subtotal: { type: Number, required: true },

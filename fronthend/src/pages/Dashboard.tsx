@@ -31,7 +31,7 @@ export default function Dashboard() {
 
   if (!stats) return (
     <div className="flex items-center justify-center min-h-[60vh]">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 -blue-600"></div>
     </div>
   );
 
@@ -64,12 +64,12 @@ export default function Dashboard() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border -blue-100">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 font-nunito tracking-tight">
+          <h1 className="text-2xl font-bold -blue-900 font-nunito tracking-tight">
             Welcome back, {greetingName} 👋
           </h1>
-          <p className="text-slate-500 font-inter text-sm mt-1">
+          <p className="-blue-400 font-inter text-sm mt-1">
             {userRole} Dashboard Overview
           </p>
         </div>
@@ -96,9 +96,9 @@ export default function Dashboard() {
           return (
             <div
               key={kpi.label}
-              className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-300 relative overflow-hidden group"
+              className="bg-white rounded-2xl p-6 border -blue-100 shadow-sm hover:shadow-md transition-shadow duration-300 relative overflow-hidden group"
             >
-              <div className="absolute -right-6 -top-6 bg-slate-50 rounded-full w-24 h-24 group-hover:scale-110 transition-transform duration-500" />
+              <div className="absolute -right-6 -top-6 -blue-100 rounded-full w-24 h-24 group-hover:scale-110 transition-transform duration-500" />
               <div className="flex items-center justify-between mb-4 relative z-10">
                 <div 
                   className="w-10 h-10 rounded-full flex items-center justify-center"
@@ -106,7 +106,7 @@ export default function Dashboard() {
                 >
                   <Icon size={20} strokeWidth={2.5} />
                 </div>
-                <span className={`text-xs font-semibold px-2 py-1 rounded-full ${kpi.trend.startsWith('+') ? 'bg-emerald-50 text-emerald-600' : kpi.trend.startsWith('-') ? 'bg-amber-50 text-amber-600' : 'bg-slate-50 text-slate-600'}`}>
+                <span className={`text-xs font-semibold px-2 py-1 rounded-full ${kpi.trend.startsWith('+') ? '-blue-100 -blue-600' : kpi.trend.startsWith('-') ? '-blue-100 -blue-600' : '-blue-100 -blue-600'}`}>
                   {kpi.trend}
                 </span>
               </div>
@@ -114,7 +114,7 @@ export default function Dashboard() {
                 <h3 className="text-3xl font-bold font-nunito tracking-tight" style={{ color: '#1E293B' }}>
                   {kpi.value}
                 </h3>
-                <p className="text-sm font-medium text-slate-500 mt-1 font-inter">
+                <p className="text-sm font-medium -blue-400 mt-1 font-inter">
                   {kpi.label}
                 </p>
               </div>
@@ -127,10 +127,10 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Spending Trends - Advanced Area Chart */}
-        <div className="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+        <div className="lg:col-span-2 bg-white rounded-2xl p-6 border -blue-100 shadow-sm">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-bold text-slate-900 font-nunito">Spending Trends</h3>
-            <select className="text-sm border-none bg-slate-50 text-slate-600 rounded-md px-2 py-1 outline-none focus:ring-2 focus:ring-teal-500 font-inter">
+            <h3 className="text-lg font-bold -blue-900 font-nunito">Spending Trends</h3>
+            <select className="text-sm border-none -blue-100 -blue-600 rounded-md px-2 py-1 outline-none focus:ring-2 focus:-blue-600 font-inter">
               <option>Last 6 Months</option>
               <option>This Year</option>
             </select>
@@ -177,8 +177,8 @@ export default function Dashboard() {
         </div>
 
         {/* Category Spend - Pie Chart */}
-        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col">
-          <h3 className="text-lg font-bold text-slate-900 font-nunito mb-2">Spend by Category</h3>
+        <div className="bg-white rounded-2xl p-6 border -blue-100 shadow-sm flex flex-col">
+          <h3 className="text-lg font-bold -blue-900 font-nunito mb-2">Spend by Category</h3>
           <div className="flex-1 min-h-[250px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -215,19 +215,19 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Recent POs */}
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-          <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-            <h3 className="text-lg font-bold text-slate-900 font-nunito">Recent Purchase Orders</h3>
-            <button className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors" onClick={() => navigate('/purchase-orders')}>View All</button>
+        <div className="lg:col-span-2 bg-white rounded-2xl border -blue-100 shadow-sm overflow-hidden flex flex-col">
+          <div className="p-6 border-b -blue-100 flex items-center justify-between">
+            <h3 className="text-lg font-bold -blue-900 font-nunito">Recent Purchase Orders</h3>
+            <button className="text-sm font-medium -blue-600 hover:-blue-700 transition-colors" onClick={() => navigate('/purchase-orders')}>View All</button>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50/50">
-                  <th className="py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider font-inter">PO Number</th>
-                  <th className="py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider font-inter">Vendor</th>
-                  <th className="py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider font-inter">Amount</th>
-                  <th className="py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider font-inter">Status</th>
+                <tr className="-blue-100/50">
+                  <th className="py-3 px-6 text-xs font-semibold -blue-400 uppercase tracking-wider font-inter">PO Number</th>
+                  <th className="py-3 px-6 text-xs font-semibold -blue-400 uppercase tracking-wider font-inter">Vendor</th>
+                  <th className="py-3 px-6 text-xs font-semibold -blue-400 uppercase tracking-wider font-inter">Amount</th>
+                  <th className="py-3 px-6 text-xs font-semibold -blue-400 uppercase tracking-wider font-inter">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -237,10 +237,10 @@ export default function Dashboard() {
                   { po: 'PO-2023-091', vendor: 'Office Wood Co.', amount: '$49,000', status: 'Draft' },
                   { po: 'PO-2023-092', vendor: 'FastLog Freight', amount: '$12,500', status: 'Paid' },
                 ].map((row, i) => (
-                  <tr key={i} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="py-3 px-6 text-sm font-mono text-slate-700">{row.po}</td>
-                    <td className="py-3 px-6 text-sm font-medium text-slate-900 font-inter">{row.vendor}</td>
-                    <td className="py-3 px-6 text-sm font-mono text-slate-700">{row.amount}</td>
+                  <tr key={i} className="hover:-blue-100/50 transition-colors">
+                    <td className="py-3 px-6 text-sm font-mono -blue-700">{row.po}</td>
+                    <td className="py-3 px-6 text-sm font-medium -blue-900 font-inter">{row.vendor}</td>
+                    <td className="py-3 px-6 text-sm font-mono -blue-700">{row.amount}</td>
                     <td className="py-3 px-6">
                       <span className={`status-badge ${getStatusBadge(row.status)}`}>
                         {row.status}
@@ -254,27 +254,27 @@ export default function Dashboard() {
         </div>
 
         {/* Top Vendors (New Module) */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col p-6">
-          <h3 className="text-lg font-bold text-slate-900 font-nunito mb-4">Top Vendors</h3>
+        <div className="bg-white rounded-2xl border -blue-100 shadow-sm flex flex-col p-6">
+          <h3 className="text-lg font-bold -blue-900 font-nunito mb-4">Top Vendors</h3>
           <div className="flex flex-col gap-4">
             {(stats.topVendors || []).map((vendor: any, idx: number) => (
-              <div key={idx} className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100 cursor-pointer">
+              <div key={idx} className="flex items-center justify-between p-3 rounded-xl hover:-blue-100 transition-colors border border-transparent hover:-blue-100 cursor-pointer">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-teal-50 flex items-center justify-center text-teal-700 font-bold font-nunito">
+                  <div className="w-10 h-10 rounded-full -blue-100 flex items-center justify-center -blue-700 font-bold font-nunito">
                     {vendor.name.charAt(0)}
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-slate-900 font-inter">{vendor.name}</p>
-                    <p className="text-xs text-slate-500 font-inter">{vendor.pos} POs active</p>
+                    <p className="text-sm font-bold -blue-900 font-inter">{vendor.name}</p>
+                    <p className="text-xs -blue-400 font-inter">{vendor.pos} POs active</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm font-bold text-slate-700 font-mono">${(vendor.spend / 1000).toFixed(0)}k</p>
+                  <p className="text-sm font-bold -blue-700 font-mono">${(vendor.spend / 1000).toFixed(0)}k</p>
                 </div>
               </div>
             ))}
             {(!stats.topVendors || stats.topVendors.length === 0) && (
-              <div className="text-center py-8 text-slate-500 text-sm font-inter">No vendor data available.</div>
+              <div className="text-center py-8 -blue-400 text-sm font-inter">No vendor data available.</div>
             )}
           </div>
         </div>

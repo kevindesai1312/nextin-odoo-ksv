@@ -120,7 +120,7 @@ export default function Users() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 -blue-600"></div>
       </div>
     );
   }
@@ -130,10 +130,10 @@ export default function Users() {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between md:items-end mb-6 gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 font-nunito tracking-tight mb-1">
+          <h1 className="text-2xl font-bold -blue-900 font-nunito tracking-tight mb-1">
             User Management
           </h1>
-          <p className="text-sm text-slate-500 font-inter">
+          <p className="text-sm -blue-400 font-inter">
             Manage system access, roles, and internal staff.
           </p>
         </div>
@@ -147,17 +147,17 @@ export default function Users() {
       </div>
 
       {/* Users Table */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+      <div className="bg-white rounded-2xl border -blue-100 shadow-sm overflow-hidden flex flex-col">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[800px]">
             <thead>
-              <tr className="bg-slate-50/50 border-b border-slate-200">
-                <th className="py-4 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider font-inter">Name</th>
-                <th className="py-4 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider font-inter">Username</th>
-                <th className="py-4 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider font-inter">Email</th>
-                <th className="py-4 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider font-inter">Role</th>
-                <th className="py-4 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider font-inter">Status</th>
-                <th className="py-4 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider font-inter text-right">Actions</th>
+              <tr className="-blue-100/50 border-b -blue-100">
+                <th className="py-4 px-6 text-xs font-semibold -blue-400 uppercase tracking-wider font-inter">Name</th>
+                <th className="py-4 px-6 text-xs font-semibold -blue-400 uppercase tracking-wider font-inter">Username</th>
+                <th className="py-4 px-6 text-xs font-semibold -blue-400 uppercase tracking-wider font-inter">Email</th>
+                <th className="py-4 px-6 text-xs font-semibold -blue-400 uppercase tracking-wider font-inter">Role</th>
+                <th className="py-4 px-6 text-xs font-semibold -blue-400 uppercase tracking-wider font-inter">Status</th>
+                <th className="py-4 px-6 text-xs font-semibold -blue-400 uppercase tracking-wider font-inter text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -167,24 +167,24 @@ export default function Users() {
                   : '-';
                   
                 return (
-                  <tr key={user._id} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="py-4 px-6 text-sm font-medium text-slate-900 font-inter">
+                  <tr key={user._id} className="hover:-blue-100/50 transition-colors">
+                    <td className="py-4 px-6 text-sm font-medium -blue-900 font-inter">
                       {displayName}
                     </td>
-                    <td className="py-4 px-6 text-sm text-slate-600 font-inter">
+                    <td className="py-4 px-6 text-sm -blue-600 font-inter">
                       @{user.username}
                     </td>
-                    <td className="py-4 px-6 text-sm text-slate-500 font-inter">
+                    <td className="py-4 px-6 text-sm -blue-400 font-inter">
                       {user.email}
                     </td>
                     <td className="py-4 px-6">
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 font-inter">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium -blue-100 -blue-700 font-inter">
                         {user.role}
                       </span>
                     </td>
                     <td className="py-4 px-6">
                       <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium font-inter ${
-                        user.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'
+                        user.isActive ? '-blue-100 -blue-700' : '-blue-100 -blue-700'
                       }`}>
                         {user.isActive ? 'Active' : 'Inactive'}
                       </span>
@@ -192,13 +192,13 @@ export default function Users() {
                     <td className="py-4 px-6 text-right">
                       <button 
                         onClick={() => handleOpenModal(user)}
-                        className="text-slate-400 hover:text-teal-600 transition-colors mr-3"
+                        className="-blue-400 hover:-blue-600 transition-colors mr-3"
                       >
                         <Edit2 size={16} />
                       </button>
                       <button 
                         onClick={() => handleDelete(user._id, user.username)}
-                        className="text-slate-400 hover:text-red-600 transition-colors"
+                        className="-blue-400 hover:-blue-600 transition-colors"
                       >
                         <Trash2 size={16} />
                       </button>
@@ -209,7 +209,7 @@ export default function Users() {
               
               {users.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-slate-500 font-inter text-sm">
+                  <td colSpan={6} className="py-8 text-center -blue-400 font-inter text-sm">
                     No users found in the database.
                   </td>
                 </tr>
@@ -221,15 +221,15 @@ export default function Users() {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 -blue-900/40 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-slate-900 font-nunito">
+            <div className="px-6 py-4 border-b -blue-100 flex items-center justify-between">
+              <h2 className="text-lg font-bold -blue-900 font-nunito">
                 {editingUser ? 'Edit User' : 'Create New User'}
               </h2>
               <button 
                 onClick={handleCloseModal}
-                className="text-slate-400 hover:text-slate-600 transition-colors"
+                className="-blue-400 hover:-blue-600 transition-colors"
               >
                 <X size={20} />
               </button>
@@ -237,7 +237,7 @@ export default function Users() {
             
             <div className="p-6 overflow-y-auto">
               {formError && (
-                <div className="mb-6 bg-red-50 text-red-700 px-4 py-3 rounded-lg text-sm font-inter flex gap-3 items-start border border-red-100">
+                <div className="mb-6 -blue-100 -blue-700 px-4 py-3 rounded-lg text-sm font-inter flex gap-3 items-start border -blue-100">
                   <AlertCircle size={16} className="mt-0.5 shrink-0" />
                   <span>{formError}</span>
                 </div>
@@ -246,7 +246,7 @@ export default function Users() {
               <form id="userForm" onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1 font-inter">First Name</label>
+                    <label className="block text-sm font-medium -blue-700 mb-1 font-inter">First Name</label>
                     <input 
                       type="text" 
                       className="input-field" 
@@ -255,7 +255,7 @@ export default function Users() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1 font-inter">Last Name</label>
+                    <label className="block text-sm font-medium -blue-700 mb-1 font-inter">Last Name</label>
                     <input 
                       type="text" 
                       className="input-field" 
@@ -266,7 +266,7 @@ export default function Users() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1 font-inter">Username <span className="text-red-500">*</span></label>
+                  <label className="block text-sm font-medium -blue-700 mb-1 font-inter">Username <span className="-blue-600">*</span></label>
                   <input 
                     type="text" 
                     required
@@ -277,7 +277,7 @@ export default function Users() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1 font-inter">Email <span className="text-red-500">*</span></label>
+                  <label className="block text-sm font-medium -blue-700 mb-1 font-inter">Email <span className="-blue-600">*</span></label>
                   <input 
                     type="email" 
                     required
@@ -288,8 +288,8 @@ export default function Users() {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1 font-inter">
-                    Password {editingUser ? '(Leave blank to keep unchanged)' : '<span className="text-red-500">*</span>'}
+                  <label className="block text-sm font-medium -blue-700 mb-1 font-inter">
+                    Password {editingUser ? '(Leave blank to keep unchanged)' : '<span className="-blue-600">*</span>'}
                   </label>
                   <input 
                     type="password" 
@@ -301,7 +301,7 @@ export default function Users() {
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1 font-inter">Role</label>
+                    <label className="block text-sm font-medium -blue-700 mb-1 font-inter">Role</label>
                     <select 
                       className="input-field"
                       value={formData.role}
@@ -314,7 +314,7 @@ export default function Users() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1 font-inter">Status</label>
+                    <label className="block text-sm font-medium -blue-700 mb-1 font-inter">Status</label>
                     <select 
                       className="input-field"
                       value={formData.isActive ? 'true' : 'false'}
@@ -328,7 +328,7 @@ export default function Users() {
               </form>
             </div>
             
-            <div className="px-6 py-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-3 rounded-b-2xl">
+            <div className="px-6 py-4 border-t -blue-100 -blue-100 flex justify-end gap-3 rounded-b-2xl">
               <button 
                 type="button"
                 onClick={handleCloseModal}

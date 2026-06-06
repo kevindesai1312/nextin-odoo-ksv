@@ -19,8 +19,9 @@ const invoiceSchema = new mongoose.Schema({
   sgstAmount: { type: Number, default: 0 },
   igstAmount: { type: Number, default: 0 },
   grandTotal: { type: Number, required: true },
-  status: { type: String, enum: ['Pending Payment', 'Paid', 'Overdue', 'Cancelled'], default: 'Pending Payment' },
+  status: { type: String, enum: ['Draft', 'Generated', 'Sent', 'Paid', 'Overdue', 'Cancelled', 'Pending Payment'], default: 'Draft' },
   items: [invoiceItemSchema],
+  paymentTerms: String,
   paidAt: Date
 }, { timestamps: true });
 

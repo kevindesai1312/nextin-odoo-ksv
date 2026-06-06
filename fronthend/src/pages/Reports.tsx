@@ -16,6 +16,10 @@ interface Stats {
     activeVendors: number;
     poFulfillment: number;
     overdueInvoices: number;
+    totalRfqs: number;
+    activeRfqs: number;
+    approvalSuccessRate: number;
+    cycleTimeDays: number;
   };
   categorySpend: { category: string; amount: number; color: string }[];
   topVendors: { name: string; spend: number; pos: number }[];
@@ -75,7 +79,7 @@ export default function Reports() {
   if (loading || !stats) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 -blue-600"></div>
       </div>
     );
   }
@@ -87,17 +91,17 @@ export default function Reports() {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between md:items-end mb-6 gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 font-nunito tracking-tight mb-1">
+          <h1 className="text-2xl font-bold -blue-900 font-nunito tracking-tight mb-1">
             Reports & Analytics
           </h1>
-          <p className="text-sm text-slate-500 font-inter">
+          <p className="text-sm -blue-400 font-inter">
             Real-time Procurement Insights
           </p>
         </div>
         <div className="flex items-center gap-3">
           <button 
             onClick={handleExportCSV}
-            className="btn-outline bg-white shadow-sm hover:bg-slate-50 transition-colors"
+            className="btn-outline bg-white shadow-sm hover:-blue-100 transition-colors"
           >
             <Download size={16} />
             Export CSV
@@ -106,37 +110,65 @@ export default function Reports() {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm text-center">
-          <div className="text-3xl font-bold font-nunito text-teal-700 mb-1">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <div className="bg-white rounded-2xl p-6 border -blue-100 shadow-sm text-center">
+          <div className="text-3xl font-bold font-nunito -blue-700 mb-1">
             ₹{stats.kpis.totalSpend}L
           </div>
-          <div className="text-xs font-medium text-slate-500 font-inter uppercase tracking-wider">
+          <div className="text-xs font-medium -blue-400 font-inter uppercase tracking-wider">
             Total Spend
           </div>
         </div>
-        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm text-center">
-          <div className="text-3xl font-bold font-nunito text-teal-700 mb-1">
+        <div className="bg-white rounded-2xl p-6 border -blue-100 shadow-sm text-center">
+          <div className="text-3xl font-bold font-nunito -blue-700 mb-1">
             {stats.kpis.activeVendors}
           </div>
-          <div className="text-xs font-medium text-slate-500 font-inter uppercase tracking-wider">
+          <div className="text-xs font-medium -blue-400 font-inter uppercase tracking-wider">
             Active Vendors
           </div>
         </div>
-        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm text-center">
-          <div className="text-3xl font-bold font-nunito text-teal-700 mb-1">
+        <div className="bg-white rounded-2xl p-6 border -blue-100 shadow-sm text-center">
+          <div className="text-3xl font-bold font-nunito -blue-700 mb-1">
             {stats.kpis.poFulfillment}
           </div>
-          <div className="text-xs font-medium text-slate-500 font-inter uppercase tracking-wider">
+          <div className="text-xs font-medium -blue-400 font-inter uppercase tracking-wider">
             Total POs
           </div>
         </div>
-        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm text-center">
-          <div className="text-3xl font-bold font-nunito text-red-600 mb-1">
+        <div className="bg-white rounded-2xl p-6 border -blue-100 shadow-sm text-center">
+          <div className="text-3xl font-bold font-nunito -blue-600 mb-1">
             {stats.kpis.overdueInvoices}
           </div>
-          <div className="text-xs font-medium text-slate-500 font-inter uppercase tracking-wider">
+          <div className="text-xs font-medium -blue-400 font-inter uppercase tracking-wider">
             Overdue Invoices
+          </div>
+        </div>
+      </div>
+      
+      {/* Secondary KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-6">
+        <div className="bg-white rounded-2xl p-6 border -blue-100 shadow-sm text-center">
+          <div className="text-3xl font-bold font-nunito -blue-700 mb-1">
+            {stats.kpis.activeRfqs} <span className="text-lg -blue-400">/ {stats.kpis.totalRfqs}</span>
+          </div>
+          <div className="text-xs font-medium -blue-400 font-inter uppercase tracking-wider">
+            Active / Total RFQs
+          </div>
+        </div>
+        <div className="bg-white rounded-2xl p-6 border -blue-100 shadow-sm text-center">
+          <div className="text-3xl font-bold font-nunito -blue-700 mb-1">
+            {stats.kpis.approvalSuccessRate}%
+          </div>
+          <div className="text-xs font-medium -blue-400 font-inter uppercase tracking-wider">
+            Approval Success Rate
+          </div>
+        </div>
+        <div className="bg-white rounded-2xl p-6 border -blue-100 shadow-sm text-center">
+          <div className="text-3xl font-bold font-nunito -blue-700 mb-1">
+            {stats.kpis.cycleTimeDays}d
+          </div>
+          <div className="text-xs font-medium -blue-400 font-inter uppercase tracking-wider">
+            Avg Cycle Time
           </div>
         </div>
       </div>
@@ -144,22 +176,22 @@ export default function Reports() {
       {/* Middle Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Spend by Category */}
-        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col">
-          <h4 className="text-xs font-semibold text-slate-500 font-inter uppercase tracking-wide mb-6">
+        <div className="bg-white rounded-2xl p-6 border -blue-100 shadow-sm flex flex-col">
+          <h4 className="text-xs font-semibold -blue-400 font-inter uppercase tracking-wide mb-6">
             Spend by Category (Lakhs)
           </h4>
           <div className="flex flex-col gap-5 flex-1 justify-center">
             {stats.categorySpend.map((cat, idx) => (
               <div key={idx}>
                 <div className="flex justify-between items-end mb-2">
-                  <span className="text-sm font-medium text-slate-900 font-inter">
+                  <span className="text-sm font-medium -blue-900 font-inter">
                     {cat.category}
                   </span>
-                  <span className="text-sm text-slate-500 font-mono">
+                  <span className="text-sm -blue-400 font-mono">
                     ₹{cat.amount}L
                   </span>
                 </div>
-                <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-2 w-full -blue-100 rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full transition-all duration-1000 ease-out"
                     style={{
@@ -174,38 +206,38 @@ export default function Reports() {
         </div>
 
         {/* Top Vendors by Spend */}
-        <div className="bg-white rounded-2xl p-0 border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-          <div className="p-6 pb-4 border-b border-slate-100">
-            <h4 className="text-xs font-semibold text-slate-500 font-inter uppercase tracking-wide">
+        <div className="bg-white rounded-2xl p-0 border -blue-100 shadow-sm overflow-hidden flex flex-col">
+          <div className="p-6 pb-4 border-b -blue-100">
+            <h4 className="text-xs font-semibold -blue-400 font-inter uppercase tracking-wide">
               Top Vendors by Spend
             </h4>
           </div>
           <div className="overflow-x-auto flex-1">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50/50 border-b border-slate-100">
-                  <th className="py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider font-inter">Vendor</th>
-                  <th className="py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider font-inter text-right">Spend (₹)</th>
-                  <th className="py-3 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider font-inter text-right">POs</th>
+                <tr className="-blue-100/50 border-b -blue-100">
+                  <th className="py-3 px-6 text-xs font-semibold -blue-400 uppercase tracking-wider font-inter">Vendor</th>
+                  <th className="py-3 px-6 text-xs font-semibold -blue-400 uppercase tracking-wider font-inter text-right">Spend (₹)</th>
+                  <th className="py-3 px-6 text-xs font-semibold -blue-400 uppercase tracking-wider font-inter text-right">POs</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {stats.topVendors.map((v, i) => (
-                  <tr key={i} className="hover:bg-slate-50/50 transition-colors">
-                    <td className="py-3 px-6 text-sm font-medium text-slate-900 font-inter">
+                  <tr key={i} className="hover:-blue-100/50 transition-colors">
+                    <td className="py-3 px-6 text-sm font-medium -blue-900 font-inter">
                       {v.name}
                     </td>
-                    <td className="py-3 px-6 text-sm font-mono text-slate-700 text-right">
+                    <td className="py-3 px-6 text-sm font-mono -blue-700 text-right">
                       {v.spend.toLocaleString()}
                     </td>
-                    <td className="py-3 px-6 text-sm font-mono text-slate-700 text-right">
+                    <td className="py-3 px-6 text-sm font-mono -blue-700 text-right">
                       {v.pos}
                     </td>
                   </tr>
                 ))}
                 {stats.topVendors.length === 0 && (
                   <tr>
-                    <td colSpan={3} className="py-8 text-center text-slate-400 font-inter text-sm">
+                    <td colSpan={3} className="py-8 text-center -blue-400 font-inter text-sm">
                       No vendor spend data available
                     </td>
                   </tr>
@@ -217,8 +249,8 @@ export default function Reports() {
       </div>
 
       {/* Monthly Trend */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-        <h4 className="text-xs font-semibold text-slate-500 font-inter uppercase tracking-wide mb-6">
+      <div className="bg-white rounded-2xl p-6 border -blue-100 shadow-sm">
+        <h4 className="text-xs font-semibold -blue-400 font-inter uppercase tracking-wide mb-6">
           Monthly Spend Trend
         </h4>
         <div className="h-[260px] w-full">

@@ -1,343 +1,482 @@
-import { useState } from 'react';
-import { Send, Save } from 'lucide-react';
-
-const initialItems = [
-  { id: '1', name: 'Ergonomic chair', qty: 25, unitPrice: 3500, total: 87500, delivery: 7 },
-  { id: '2', name: 'Standing desks', qty: 10, unitPrice: 9200, total: 92000, delivery: 14 },
-];
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FileText, Search, ChevronRight, Calculator, Clock, Users, X, Save, Send } from 'lucide-react';
+import { api } from '../lib/api';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Quotations() {
-  const [items, setItems] = useState(initialItems);
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [rfqs, setRfqs] = useState<any[]>([]);
+  const [quotations, setQuotations] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState<'deadline' | 'bids' | 'title'>('deadline');
+  
+  // Vendor specific state
+  const [activeRfqForQuote, setActiveRfqForQuote] = useState<any | null>(null);
+  const [quoteItems, setQuoteItems] = useState<any[]>([]);
   const [taxPercent, setTaxPercent] = useState(18);
-  const [notes, setNotes] = useState('Payment terms: 20 days net from delivery');
+  const [deliveryDays, setDeliveryDays] = useState(7);
+  const [notes, setNotes] = useState('Payment terms: 30 days net');
+  const [attachments, setAttachments] = useState<{name: string, url: string}[]>([]);
+  const [editingQuoteId, setEditingQuoteId] = useState<string | null>(null);
 
-  const subtotal = items.reduce((sum, i) => sum + i.total, 0);
-  const taxAmount = Math.round(subtotal * (taxPercent / 100));
-  const grandTotal = subtotal + taxAmount;
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-  return (
-    <div>
-      {/* Header */}
-      <div style={{ marginBottom: '24px' }}>
-        <h1
-          style={{
-            fontFamily: "'Nunito', sans-serif",
-            fontSize: '24px',
-            fontWeight: 600,
-            color: '#1E293B',
-            marginBottom: '4px',
-          }}
-        >
-          Submit Quotations
-        </h1>
-        <p
-          style={{
-            fontSize: '14px',
-            color: '#64748B',
-            fontFamily: "'Inter', sans-serif",
-          }}
-        >
-          RFQ: office furniture procurement q2 — deadline 15 june 2025
-        </p>
+  const fetchData = () => {
+    setLoading(true);
+    Promise.all([
+      api.get('/api/rfqs'),
+      api.get('/api/quotations')
+    ])
+    .then(([rfqRes, quoteRes]) => {
+      const rData = Array.isArray(rfqRes.data) ? rfqRes.data : (rfqRes.data?.data || rfqRes);
+      const qData = Array.isArray(quoteRes.data) ? quoteRes.data : (quoteRes.data?.data || quoteRes);
+      setRfqs(Array.isArray(rData) ? rData : []);
+      setQuotations(Array.isArray(qData) ? qData : []);
+    })
+    .catch(console.error)
+    .finally(() => setLoading(false));
+  };
+
+  // --- VENDOR LOGIC ---
+  const handleOpenQuoteForm = (rfq: any, existingQuote?: any) => {
+    setActiveRfqForQuote(rfq);
+    if (existingQuote) {
+      setQuoteItems(existingQuote.items);
+      setTaxPercent(existingQuote.taxGstPercent);
+      setDeliveryDays(existingQuote.deliveryDays);
+      setNotes(existingQuote.notes || '');
+      setAttachments(existingQuote.attachments || []);
+      setEditingQuoteId(existingQuote.id || existingQuote._id);
+    } else {
+      setQuoteItems(rfq.items.map((i: any) => ({
+        ...i,
+        unitPrice: 0,
+        totalPrice: 0,
+      })));
+      setTaxPercent(18);
+      setDeliveryDays(7);
+      setNotes('Payment terms: 30 days net');
+      setAttachments([]);
+      setEditingQuoteId(null);
+    }
+  };
+
+  const handleUpdateQuoteItem = (idx: number, price: number) => {
+    const newItems = [...quoteItems];
+    newItems[idx].unitPrice = price;
+    newItems[idx].totalPrice = price * newItems[idx].qty;
+    setQuoteItems(newItems);
+  };
+
+  const handleSubmitQuote = async () => {
+    try {
+      const subtotal = quoteItems.reduce((sum, i) => sum + i.totalPrice, 0);
+      const gstAmount = Math.round(subtotal * (taxPercent / 100));
+      const grandTotal = subtotal + gstAmount;
+
+      const payload = {
+        rfqId: activeRfqForQuote.id || activeRfqForQuote._id,
+        vendorId: user?.id || (user as any)?._id || '661858a2f3a61b2a9c3d4e51', // Fallback to a dummy vendor ID if not fully wired
+        items: quoteItems,
+        status: 'Submitted',
+        taxGstPercent: taxPercent,
+        subtotal,
+        gstAmount,
+        grandTotal,
+        deliveryDays,
+        notes,
+        attachments
+      };
+
+      if (editingQuoteId) {
+        await api.put(`/api/quotations/${editingQuoteId}`, payload);
+        alert('Quotation updated successfully!');
+      } else {
+        await api.post('/api/quotations', payload);
+        alert('Quotation submitted successfully!');
+      }
+      setActiveRfqForQuote(null);
+      fetchData(); // Refresh so they see their submitted quote
+    } catch (err: any) {
+      console.error(err);
+      alert(err.response?.data?.message || 'Failed to submit quotation');
+    }
+  };
+
+  // --- OFFICER LOGIC ---
+  const rfqsWithQuotes = rfqs.filter(rfq => rfq.status === 'Published' || rfq.status === 'Closed').map(rfq => {
+    const quotes = quotations.filter(q => (q.rfqId === rfq.id) || (q.rfqId === rfq._id));
+    return { ...rfq, quotes };
+  });
+
+  const filteredRfqs = rfqsWithQuotes.filter(r => 
+    r.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    r.rfqNumber?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const sortedRfqs = [...filteredRfqs].sort((a, b) => {
+    if (sortBy === 'deadline') {
+      return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+    }
+    if (sortBy === 'bids') {
+      return b.quotes.length - a.quotes.length; // Descending
+    }
+    return a.title.localeCompare(b.title);
+  });
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 -blue-600"></div>
       </div>
+    );
+  }
 
-      {/* RFQ Summary */}
-      <div
-        style={{
-          background: '#F8FBFA',
-          borderRadius: '12px',
-          padding: '16px 20px',
-          marginBottom: '24px',
-          border: '1px solid #E2E8F0',
-        }}
-      >
-        <p
-          style={{
-            fontSize: '13px',
-            color: '#64748B',
-            fontFamily: "'Inter', sans-serif",
-          }}
-        >
-          <strong style={{ color: '#1E293B' }}>RFQ Summary:</strong> Ergonomic chair * 25, standing desk
-          *10 — category Furniture
-        </p>
-      </div>
+  // ==========================================
+  // VENDOR VIEW: SUBMIT QUOTATION FORM
+  // ==========================================
+  if (user?.role === 'Vendor' && activeRfqForQuote) {
+    const subtotal = quoteItems.reduce((sum, i) => sum + i.totalPrice, 0);
+    const taxAmount = Math.round(subtotal * (taxPercent / 100));
+    const grandTotal = subtotal + taxAmount;
 
-      {/* Your Quotation Table */}
-      <div className="card-surface" style={{ marginBottom: '24px', padding: 0, overflow: 'hidden' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ background: '#F8FBFA' }}>
-              {['Item', 'Qty', 'Unit Price', 'Total', 'Delivery (days)'].map((h) => (
-                <th
-                  key={h}
-                  style={{
-                    padding: '12px 16px',
-                    textAlign: h === 'Item' ? 'left' : 'center',
-                    fontSize: '11px',
-                    fontWeight: 600,
-                    color: '#64748B',
-                    textTransform: 'uppercase',
-                    borderBottom: '1px solid #E2E8F0',
-                    fontFamily: "'Inter', sans-serif",
-                  }}
-                >
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((item, i) => (
-              <tr
-                key={item.id}
-                style={{
-                  background: i % 2 === 1 ? '#F8FBFA' : 'white',
-                  borderBottom: '1px solid #E2E8F0',
-                }}
-              >
-                <td
-                  style={{
-                    padding: '12px 16px',
-                    fontSize: '14px',
-                    fontFamily: "'Inter', sans-serif",
-                    color: '#1E293B',
-                    fontWeight: 500,
-                  }}
-                >
-                  {item.name}
-                </td>
-                <td
-                  style={{
-                    padding: '12px 16px',
-                    fontSize: '13px',
-                    fontFamily: "'IBM Plex Mono', monospace",
-                    color: '#1E293B',
-                    textAlign: 'center',
-                  }}
-                >
-                  {item.qty}
-                </td>
-                <td
-                  style={{
-                    padding: '12px 16px',
-                    fontSize: '13px',
-                    fontFamily: "'IBM Plex Mono', monospace",
-                    color: '#1E293B',
-                    textAlign: 'center',
-                  }}
-                >
-                  <input
-                    type="number"
-                    value={item.unitPrice}
-                    onChange={(e) => {
-                      const newItems = [...items];
-                      const price = parseInt(e.target.value) || 0;
-                      newItems[i].unitPrice = price;
-                      newItems[i].total = price * newItems[i].qty;
-                      setItems(newItems);
-                    }}
-                    className="input-field"
-                    style={{ width: '100px', textAlign: 'center', fontSize: '13px' }}
-                  />
-                </td>
-                <td
-                  style={{
-                    padding: '12px 16px',
-                    fontSize: '13px',
-                    fontFamily: "'IBM Plex Mono', monospace",
-                    color: '#1E293B',
-                    textAlign: 'center',
-                  }}
-                >
-                  {item.total.toLocaleString()}
-                </td>
-                <td
-                  style={{
-                    padding: '12px 16px',
-                    fontSize: '13px',
-                    fontFamily: "'IBM Plex Mono', monospace",
-                    color: '#1E293B',
-                    textAlign: 'center',
-                  }}
-                >
-                  <input
-                    type="number"
-                    value={item.delivery}
-                    onChange={(e) => {
-                      const newItems = [...items];
-                      newItems[i].delivery = parseInt(e.target.value) || 0;
-                      setItems(newItems);
-                    }}
-                    className="input-field"
-                    style={{ width: '80px', textAlign: 'center', fontSize: '13px' }}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Tax & Totals */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '24px',
-          marginBottom: '24px',
-        }}
-      >
-        {/* Left - Tax & Notes */}
-        <div>
-          <div style={{ marginBottom: '16px' }}>
-            <label
-              style={{
-                display: 'block',
-                fontSize: '13px',
-                fontWeight: 500,
-                color: '#64748B',
-                marginBottom: '6px',
-                fontFamily: "'Inter', sans-serif",
-              }}
-            >
-              Tax / GST %
-            </label>
-            <input
-              type="number"
-              className="input-field"
-              value={taxPercent}
-              onChange={(e) => setTaxPercent(parseInt(e.target.value) || 0)}
-              style={{ width: '100px' }}
-            />
-          </div>
+    return (
+      <div className="animate-in fade-in duration-300 pb-12">
+        <div className="flex justify-between items-center mb-6">
           <div>
-            <label
-              style={{
-                display: 'block',
-                fontSize: '13px',
-                fontWeight: 500,
-                color: '#64748B',
-                marginBottom: '6px',
-                fontFamily: "'Inter', sans-serif",
-              }}
-            >
-              Note / terms
-            </label>
-            <textarea
-              className="input-field"
-              rows={3}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              style={{ resize: 'vertical' }}
-            />
+            <h1 className="text-2xl font-bold -blue-900 font-nunito tracking-tight mb-1">
+              Submit Quotation
+            </h1>
+            <p className="text-sm -blue-400 font-inter">
+              RFQ: {activeRfqForQuote.rfqNumber} — {activeRfqForQuote.title}
+            </p>
+          </div>
+          <button 
+            onClick={() => setActiveRfqForQuote(null)}
+            className="-blue-400 hover:-blue-700 p-2 rounded-full hover:-blue-100 transition-colors"
+          >
+            <X size={24} />
+          </button>
+        </div>
+
+        <div className="-blue-100 border -blue-100 p-4 rounded-xl mb-6">
+          <p className="text-sm -blue-900 font-inter">
+            <strong className="font-semibold">Instructions:</strong> Provide your best unit prices for the requested items below. Your total will be calculated automatically.
+          </p>
+        </div>
+
+        <div className="bg-white rounded-2xl border -blue-100 shadow-sm overflow-hidden mb-6">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="-blue-100 border-b -blue-100">
+                  <th className="py-3 px-6 text-xs font-semibold -blue-400 uppercase tracking-wider">Item Name</th>
+                  <th className="py-3 px-6 text-xs font-semibold -blue-400 uppercase tracking-wider text-center">Req. Qty</th>
+                  <th className="py-3 px-6 text-xs font-semibold -blue-400 uppercase tracking-wider text-center w-40">Unit Price (₹)</th>
+                  <th className="py-3 px-6 text-xs font-semibold -blue-400 uppercase tracking-wider text-right">Total Price</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {quoteItems.map((item, i) => (
+                  <tr key={i} className="hover:-blue-100/50">
+                    <td className="py-3 px-6 text-sm font-medium -blue-900">{item.name}</td>
+                    <td className="py-3 px-6 text-sm -blue-600 font-mono text-center">{item.qty} {item.unit}</td>
+                    <td className="py-3 px-6 text-center">
+                      <input
+                        type="number"
+                        min="0"
+                        className="input-field text-center w-full"
+                        value={item.unitPrice || ''}
+                        onChange={(e) => handleUpdateQuoteItem(i, parseInt(e.target.value) || 0)}
+                      />
+                    </td>
+                    <td className="py-3 px-6 text-sm font-mono font-medium -blue-900 text-right">
+                      ₹{item.totalPrice.toLocaleString()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
 
-        {/* Right - Summary Box */}
-        <div
-          className="card-surface"
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              padding: '8px 0',
-              borderBottom: '1px solid #E2E8F0',
-            }}
-          >
-            <span
-              style={{
-                fontSize: '14px',
-                color: '#64748B',
-                fontFamily: "'Inter', sans-serif",
-              }}
-            >
-              Subtotal
-            </span>
-            <span
-              style={{
-                fontSize: '14px',
-                fontFamily: "'IBM Plex Mono', monospace",
-                color: '#1E293B',
-              }}
-            >
-              {subtotal.toLocaleString()}
-            </span>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <div className="space-y-5 bg-white p-6 rounded-2xl border -blue-100 shadow-sm">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold -blue-700 mb-1.5">GST / Tax %</label>
+                <input
+                  type="number"
+                  className="input-field w-full"
+                  value={taxPercent}
+                  onChange={(e) => setTaxPercent(parseInt(e.target.value) || 0)}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold -blue-700 mb-1.5">Delivery (Days)</label>
+                <input
+                  type="number"
+                  className="input-field w-full"
+                  value={deliveryDays}
+                  onChange={(e) => setDeliveryDays(parseInt(e.target.value) || 0)}
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold -blue-700 mb-1.5">Terms & Notes</label>
+              <textarea
+                className="input-field w-full resize-y min-h-[80px]"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+              />
+            </div>
+
+            
+            {/* Attachments */}
+            <div className="mt-4">
+              <label className="block text-sm font-semibold -blue-700 mb-1.5">Attachments</label>
+              <div className="border-2 border-dashed -blue-100 hover:-blue-400 transition-colors rounded-xl p-4 text-center relative">
+                <input 
+                  type="file" 
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                      setAttachments([...attachments, { name: e.target.files[0].name, url: 'https://example.com/mock.pdf' }]);
+                    }
+                  }} 
+                />
+                <p className="text-sm -blue-400">Click or drag files to upload</p>
+              </div>
+              {attachments.length > 0 && (
+                <div className="mt-3 space-y-2">
+                  {attachments.map((file, i) => (
+                    <div key={i} className="flex justify-between items-center bg-white p-2 border -blue-100 rounded-md">
+                      <span className="text-xs font-medium -blue-900">{file.name}</span>
+                      <button onClick={() => setAttachments(attachments.filter((_, idx) => idx !== i))} className="-blue-400 hover:-blue-600">
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              padding: '8px 0',
-              borderBottom: '1px solid #E2E8F0',
-            }}
-          >
-            <span
-              style={{
-                fontSize: '14px',
-                color: '#64748B',
-                fontFamily: "'Inter', sans-serif",
-              }}
-            >
-              GST ({taxPercent}%)
-            </span>
-            <span
-              style={{
-                fontSize: '14px',
-                fontFamily: "'IBM Plex Mono', monospace",
-                color: '#1E293B',
-              }}
-            >
-              {taxAmount.toLocaleString()}
-            </span>
+
+          <div className="bg-white p-6 rounded-2xl border -blue-100 shadow-sm flex flex-col justify-center">
+            <h4 className="text-base font-bold -blue-900 font-nunito mb-4 border-b -blue-100 pb-2">
+              Quotation Summary
+            </h4>
+            <div className="space-y-3 mb-6">
+              <div className="flex justify-between items-center text-sm -blue-600">
+                <span>Subtotal</span>
+                <span className="font-mono">₹{subtotal.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm -blue-600">
+                <span>GST ({taxPercent}%)</span>
+                <span className="font-mono">₹{taxAmount.toLocaleString()}</span>
+              </div>
+              <div className="pt-3 border-t -blue-100 flex justify-between items-center">
+                <span className="text-base font-bold -blue-900">Grand Total</span>
+                <span className="text-2xl font-bold -blue-700 font-mono">₹{grandTotal.toLocaleString()}</span>
+              </div>
+            </div>
+            
+            <div className="flex gap-3">
+              <button className="btn-outline flex-1 flex justify-center -blue-600 -blue-100">
+                <Save size={18} /> Save Draft
+              </button>
+              <button onClick={handleSubmitQuote} className="btn-primary flex-1 flex justify-center -blue-600 hover:-blue-700">
+                <Send size={18} /> {editingQuoteId ? 'Update Bid' : 'Submit Bid'}
+              </button>
+            </div>
           </div>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              padding: '12px 0 0',
-            }}
+        </div>
+      </div>
+    );
+  }
+
+  // ==========================================
+  // VENDOR VIEW: LIST OF RFQS THEY CAN BID ON
+  // ==========================================
+  if (user?.role === 'Vendor') {
+    // Only show published RFQs
+    const vendorRfqs = rfqs.filter(r => r.status === 'Published');
+    
+    return (
+      <div className="animate-in fade-in duration-500">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+          <div>
+            <h1 className="text-2xl font-bold -blue-900 font-nunito tracking-tight mb-1">
+              Available RFQs
+            </h1>
+            <p className="text-sm -blue-400 font-inter">
+              Review requests and submit your best quotations
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {vendorRfqs.length === 0 ? (
+            <div className="col-span-full text-center py-12 bg-white rounded-2xl border -blue-100 shadow-sm">
+              <FileText size={48} className="mx-auto -blue-100 mb-4" />
+              <p className="-blue-400 font-inter">No RFQs available for bidding.</p>
+            </div>
+          ) : (
+            vendorRfqs.map((rfq) => {
+              const existingQuote = quotations.find(q => (q.rfqId === rfq.id || q.rfqId === rfq._id) && (q.vendorId === user?.id || q.vendorId === (user as any)?._id));
+              const hasSubmitted = !!existingQuote;
+              const isDeadlinePassed = new Date() > new Date(rfq.deadline);
+              
+              return (
+                <div key={rfq.id} className="bg-white rounded-2xl border -blue-100 shadow-sm hover:shadow-md transition-all duration-200 p-6 flex flex-col h-full group">
+                  <div className="flex justify-between items-start mb-4">
+                    <span className="text-sm font-mono font-medium -blue-400 -blue-100 px-2 py-1 rounded-md border -blue-100">
+                      {rfq.rfqNumber}
+                    </span>
+                    {hasSubmitted && (
+                      <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wider border -blue-100 -blue-700 -blue-100">
+                        Bid Submitted
+                      </span>
+                    )}
+                  </div>
+                  
+                  <h3 className="text-lg font-bold -blue-900 font-nunito leading-tight mb-2 flex-grow">
+                    {rfq.title}
+                  </h3>
+                  
+                  <div className="space-y-3 mt-4 pt-4 border-t -blue-100 mb-6">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="-blue-400 flex items-center gap-1.5"><Clock size={14} /> Deadline</span>
+                      <span className="font-medium -blue-600">
+                        {rfq.deadline ? new Date(rfq.deadline).toLocaleDateString() : 'N/A'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="-blue-400 flex items-center gap-1.5"><FileText size={14} /> Items Requested</span>
+                      <span className="font-mono -blue-700">{rfq.items?.length || 0}</span>
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={() => handleOpenQuoteForm(rfq, existingQuote)}
+                    disabled={isDeadlinePassed && !hasSubmitted}
+                    className={`w-full py-2.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-colors ${
+                      (isDeadlinePassed && !hasSubmitted)
+                        ? 'bg-[#DBEAFE] text-[#60A5FA] cursor-not-allowed'
+                        : 'bg-[#2563EB] text-white hover:bg-[#1D4ED8] shadow-sm hover:shadow'
+                    }`}
+                  >
+                    {hasSubmitted && !isDeadlinePassed ? 'Edit Quotation' : hasSubmitted ? 'Quotation Locked' : isDeadlinePassed ? 'Deadline Passed' : 'Submit Quotation'}
+                  </button>
+                </div>
+              );
+            })
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ==========================================
+  // OFFICER VIEW: REVIEW RECEIVED BIDS
+  // ==========================================
+  return (
+    <div className="animate-in fade-in duration-500">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div>
+          <h1 className="text-2xl font-bold -blue-900 font-nunito tracking-tight mb-1">
+            Quotations Review
+          </h1>
+          <p className="text-sm -blue-400 font-inter">
+            Review and compare vendor bids submitted against your RFQs
+          </p>
+        </div>
+        <div className="flex flex-col sm:flex-row w-full md:w-auto gap-3">
+          <select
+            className="input-field w-full sm:w-auto text-sm"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as any)}
           >
-            <span
-              style={{
-                fontSize: '16px',
-                fontWeight: 700,
-                color: '#1E293B',
-                fontFamily: "'Inter', sans-serif",
-              }}
-            >
-              Grand Total
-            </span>
-            <span
-              style={{
-                fontSize: '18px',
-                fontWeight: 700,
-                fontFamily: "'IBM Plex Mono', monospace",
-                color: '#0D9488',
-              }}
-            >
-              {grandTotal.toLocaleString()}
-            </span>
+            <option value="deadline">Sort by Deadline</option>
+            <option value="bids">Sort by Most Bids</option>
+            <option value="title">Sort by Title</option>
+          </select>
+          <div className="relative w-full md:w-64">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search size={16} className="-blue-400" />
+            </div>
+            <input
+              type="text"
+              className="input-field pl-10 w-full text-sm"
+              placeholder="Search RFQs..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
           </div>
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div style={{ display: 'flex', gap: '12px' }}>
-        <button className="btn-primary">
-          <Send size={16} />
-          Submit Quotation
-        </button>
-        <button className="btn-outline">
-          <Save size={16} />
-          Save Draft
-        </button>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {sortedRfqs.length === 0 ? (
+          <div className="col-span-full text-center py-12 bg-white rounded-2xl border -blue-100 shadow-sm">
+            <Calculator size={48} className="mx-auto -blue-100 mb-4" />
+            <p className="-blue-400 font-inter mb-1">No published RFQs found.</p>
+            <p className="text-sm -blue-400">Publish an RFQ to start receiving quotations.</p>
+          </div>
+        ) : (
+          sortedRfqs.map((rfq) => (
+            <div key={rfq.id} className="bg-white rounded-2xl border -blue-100 shadow-sm hover:shadow-md transition-all duration-200 p-6 flex flex-col h-full group">
+              <div className="flex justify-between items-start mb-4">
+                <span className="text-sm font-mono font-medium -blue-400 -blue-100 px-2 py-1 rounded-md border -blue-100">
+                  {rfq.rfqNumber}
+                </span>
+                <span className={`px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wider border ${
+                  rfq.quotes.length > 0 ? '-blue-100 -blue-700 -blue-100' : '-blue-100 -blue-600 -blue-100'
+                }`}>
+                  {rfq.quotes.length} Bid{rfq.quotes.length !== 1 ? 's' : ''} Received
+                </span>
+              </div>
+              
+              <h3 className="text-lg font-bold -blue-900 font-nunito leading-tight mb-2 flex-grow">
+                {rfq.title}
+              </h3>
+              
+              <div className="space-y-3 mt-4 pt-4 border-t -blue-100 mb-6">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="-blue-400 flex items-center gap-1.5"><Clock size={14} /> Deadline</span>
+                  <span className="font-medium -blue-900">
+                    {rfq.deadline ? new Date(rfq.deadline).toLocaleDateString() : 'N/A'}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="-blue-400 flex items-center gap-1.5"><Users size={14} /> Invited Vendors</span>
+                  <span className="font-mono -blue-700">{rfq.assignedVendors?.length || 0}</span>
+                </div>
+              </div>
+
+              <button 
+                onClick={() => navigate('/comparison', { state: { rfq, quotes: rfq.quotes } })}
+                disabled={rfq.quotes.length === 0}
+                className={`w-full py-2.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-colors ${
+                  rfq.quotes.length > 0 
+                    ? 'bg-[#2563EB] text-white hover:bg-[#1D4ED8] shadow-sm hover:shadow group-hover:-translate-y-0.5 duration-200'
+                    : 'bg-[#DBEAFE] text-[#60A5FA] cursor-not-allowed'
+                }`}
+              >
+                {rfq.quotes.length > 0 ? (
+                  <>Compare Bids <ChevronRight size={16} /></>
+                ) : (
+                  'Waiting for Bids...'
+                )}
+              </button>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

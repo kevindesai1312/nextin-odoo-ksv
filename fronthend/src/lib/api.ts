@@ -15,7 +15,7 @@ export const api = {
     return { data };
   },
   
-  async post(url: string, data: any) {
+  async post(url: string, data?: any) {
     const token = localStorage.getItem('token');
     const response = await fetch(url, {
       method: 'POST',
@@ -23,7 +23,7 @@ export const api = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify(data)
+      body: data ? JSON.stringify(data) : undefined
     });
     const resData = await response.json();
     if (!response.ok) {
@@ -34,7 +34,7 @@ export const api = {
     return { data: resData };
   },
 
-  async put(url: string, data: any) {
+  async put(url: string, data?: any) {
     const token = localStorage.getItem('token');
     const response = await fetch(url, {
       method: 'PUT',
@@ -42,7 +42,7 @@ export const api = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify(data)
+      body: data ? JSON.stringify(data) : undefined
     });
     const resData = await response.json();
     if (!response.ok) {

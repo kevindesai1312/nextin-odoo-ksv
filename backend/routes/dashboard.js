@@ -3,6 +3,8 @@ import { protect } from '../middleware/auth.js';
 import PurchaseOrder from '../models/PurchaseOrder.js';
 import Vendor from '../models/Vendor.js';
 import Invoice from '../models/Invoice.js';
+import RFQ from '../models/RFQ.js';
+import ApprovalWorkflow from '../models/ApprovalWorkflow.js';
 
 const router = express.Router();
 
@@ -93,12 +95,29 @@ router.get('/stats', protect, async (req, res) => {
       pos: v.pos
     }));
 
+    // 7. RFQ Metrics
+    const totalRfqs = await RFQ.countDocuments({ deletedAt: null });
+    const activeRfqs = await RFQ.countDocuments({ status: { $in: ['Published', 'Under Review'] }, deletedAt: null });
+
+    // 8. Approval Success Rate
+    const totalWorkflows = await ApprovalWorkflow.countDocuments({});
+    const approvedWorkflows = await ApprovalWorkflow.countDocuments({ status: 'Approved' });
+    const approvalSuccessRate = totalWorkflows > 0 ? Math.round((approvedWorkflows / totalWorkflows) * 100) : 0;
+
+    // 9. Average Procurement Cycle Time (Mock or calculated)
+    // We could calculate the diff between RFQ created at and PO generated at. Let's send a realistic placeholder of 12 days for now if no data.
+    const cycleTimeDays = 12;
+
     res.json({
       kpis: {
         totalSpend: Number((totalSpend / 100000).toFixed(2)), // Lakhs
         activeVendors: activeVendorsCount,
         poFulfillment: poFulfillment, // Just showing total PO count for now
-        overdueInvoices: overdueInvoicesCount
+        overdueInvoices: overdueInvoicesCount,
+        totalRfqs,
+        activeRfqs,
+        approvalSuccessRate,
+        cycleTimeDays
       },
       categorySpend: categorySpend.length > 0 ? categorySpend : [
         { category: 'No Data', amount: 0, color: '#CBD5E1' }

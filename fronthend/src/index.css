@@ -32,8 +32,8 @@
 
   body {
     font-family: var(--font-body);
-    background-color: #F0F4F4;
-    color: #1E293B;
+    background-color: #DBEAFE;
+    color: #1E3A8A;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -56,51 +56,51 @@
     border-radius: 8px;
     font-size: 15px;
     font-weight: 500;
-    color: #334155;
+    color: #2563EB;
     transition: all 150ms ease;
     cursor: pointer;
   }
 
   .sidebar-item:hover {
-    background-color: #D4EDE4;
+    background-color: #60A5FA;
   }
 
   .sidebar-item.active {
-    background-color: #D4EDE4;
-    color: #0F172A;
+    background-color: #60A5FA;
+    color: #1E3A8A;
     font-weight: 600;
   }
 
   .card-surface {
     background: white;
-    border: 1.5px solid #CBD5E1;
+    border: 1.5px solid #60A5FA;
     border-radius: 16px;
     padding: 24px;
   }
 
   .input-field {
     background: white;
-    border: 1.5px solid #CBD5E1;
+    border: 1.5px solid #60A5FA;
     border-radius: 8px;
     padding: 10px 14px;
     font-size: 14px;
-    color: #1E293B;
+    color: #1E3A8A;
     width: 100%;
     transition: all 150ms ease;
   }
 
   .input-field:focus {
     outline: none;
-    border-color: #0D9488;
-    box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+    border-color: #2563EB;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
   }
 
   .input-field::placeholder {
-    color: #94A3B8;
+    color: #60A5FA;
   }
 
   .btn-primary {
-    background: #0D9488;
+    background: #2563EB;
     color: white;
     border: none;
     border-radius: 8px;
@@ -115,13 +115,13 @@
   }
 
   .btn-primary:hover {
-    background: #0F766E;
+    background: #1D4ED8;
   }
 
   .btn-outline {
     background: transparent;
-    color: #1E293B;
-    border: 1.5px solid #CBD5E1;
+    color: #1E3A8A;
+    border: 1.5px solid #60A5FA;
     border-radius: 8px;
     padding: 10px 20px;
     font-size: 14px;
@@ -134,7 +134,7 @@
   }
 
   .btn-outline:hover {
-    background: #F8FBFA;
+    background: #DBEAFE;
   }
 
   .status-badge {
@@ -147,27 +147,27 @@
   }
 
   .status-badge-active {
-    background: #D4F5E0;
-    color: #0F766E;
+    background: #DBEAFE;
+    color: #1D4ED8;
   }
 
   .status-badge-pending {
-    background: #FFF3CD;
-    color: #92400E;
+    background: #DBEAFE;
+    color: #1E3A8A;
   }
 
   .status-badge-blocked {
-    background: #F8D7DA;
-    color: #991B1B;
+    background: #DBEAFE;
+    color: #1E3A8A;
   }
 
   .status-badge-draft {
-    background: #F1F5F9;
-    color: #64748B;
+    background: #FFFFFF;
+    color: #2563EB;
   }
 
   .status-badge-paid {
     background: #DBEAFE;
-    color: #1E40AF;
+    color: #1E3A8A;
   }
 }

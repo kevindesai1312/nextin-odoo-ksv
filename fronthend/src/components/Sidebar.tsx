@@ -19,8 +19,8 @@ const navItems = [
   { label: 'Users', icon: UserCircle, path: '/users', roles: ['Admin'] },
   { label: 'Vendors', icon: Users, path: '/vendors', roles: ['Admin'] },
   { label: "RFQ's", icon: FileText, path: '/rfqs', roles: ['Officer', 'Vendor'] },
-  { label: 'Quotations', icon: ClipboardList, path: '/quotations', roles: ['Vendor'] },
-  { label: 'Compare Quotes', icon: ClipboardList, path: '/comparison', roles: ['Officer'] },
+  { label: 'Submit Quotes', icon: ClipboardList, path: '/quotations', roles: ['Vendor'] },
+  { label: 'Review Bids', icon: ClipboardList, path: '/quotations', roles: ['Officer'] },
   { label: 'Approvals', icon: CheckCircle, path: '/approvals', roles: ['Manager'] },
   { label: 'Purchase Orders', icon: ShoppingCart, path: '/purchase-orders', roles: ['Officer', 'Vendor'] },
   { label: 'Invoices', icon: Receipt, path: '/invoices', roles: ['Officer'] },
@@ -43,11 +43,11 @@ export default function Sidebar() {
       style={{
         width: '200px',
         minWidth: '200px',
-        background: '#E8F5F0',
+        background: '#DBEAFE',
         height: '100vh',
         display: 'flex',
         flexDirection: 'column',
-        borderRight: '1px solid #B8D4C8',
+        borderRight: '1px solid #60A5FA',
         position: 'fixed',
         left: 0,
         top: 0,
@@ -58,7 +58,7 @@ export default function Sidebar() {
       <div
         style={{
           padding: '20px',
-          borderBottom: '1px solid #B8D4C8',
+          borderBottom: '1px solid #60A5FA',
           display: 'flex',
           alignItems: 'center',
           gap: '8px',
@@ -69,7 +69,7 @@ export default function Sidebar() {
             width: '28px',
             height: '28px',
             borderRadius: '6px',
-            background: '#0D9488',
+            background: '#2563EB',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -84,7 +84,7 @@ export default function Sidebar() {
             fontFamily: "'Nunito', sans-serif",
             fontSize: '16px',
             fontWeight: 700,
-            color: '#0F172A',
+            color: '#1E3A8A',
           }}
         >
           VendorBridge
@@ -107,8 +107,8 @@ export default function Sidebar() {
                 width: '100%',
                 marginBottom: '4px',
                 border: 'none',
-                background: isActive ? '#D4EDE4' : 'transparent',
-                color: isActive ? '#0F172A' : '#334155',
+                background: isActive ? '#60A5FA' : 'transparent',
+                color: isActive ? '#1E3A8A' : '#1E3A8A',
                 fontWeight: isActive ? 600 : 500,
                 textAlign: 'left',
               }}
@@ -126,7 +126,7 @@ export default function Sidebar() {
       <div
         style={{
           padding: '16px',
-          borderTop: '1px solid #B8D4C8',
+          borderTop: '1px solid #60A5FA',
           display: 'flex',
           flexDirection: 'column',
           gap: '12px',
@@ -134,7 +134,7 @@ export default function Sidebar() {
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{ position: 'relative' }}>
-            <UserCircle size={32} color="#64748B" />
+            <UserCircle size={32} color="#2563EB" />
             <div
               style={{
                 position: 'absolute',
@@ -143,8 +143,8 @@ export default function Sidebar() {
                 width: '8px',
                 height: '8px',
                 borderRadius: '50%',
-                background: '#10B981',
-                border: '2px solid #E8F5F0',
+                background: '#2563EB',
+                border: '2px solid #DBEAFE',
               }}
             />
           </div>
@@ -153,7 +153,7 @@ export default function Sidebar() {
               style={{
                 fontSize: '13px',
                 fontWeight: 600,
-                color: '#1E293B',
+                color: '#1E3A8A',
                 fontFamily: "'Inter', sans-serif",
               }}
             >
@@ -162,7 +162,7 @@ export default function Sidebar() {
             <div
               style={{
                 fontSize: '11px',
-                color: '#64748B',
+                color: '#2563EB',
                 fontFamily: "'Inter', sans-serif",
               }}
             >
@@ -179,7 +179,7 @@ export default function Sidebar() {
             width: '100%',
             border: 'none',
             background: 'transparent',
-            color: '#DC2626',
+            color: '#1D4ED8',
             textAlign: 'left',
             marginTop: '4px',
           }}

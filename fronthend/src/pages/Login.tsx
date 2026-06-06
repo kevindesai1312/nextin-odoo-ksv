@@ -35,39 +35,39 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50 flex items-center justify-center p-4">
-      <div className="bg-white border border-slate-200 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-8 w-full max-w-md">
+      <div className="bg-white border -blue-100 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-8 w-full max-w-md">
         {/* Logo */}
         <div className="flex items-center justify-center gap-2 mb-6">
-          <div className="w-10 h-10 rounded-lg bg-teal-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg -blue-600 flex items-center justify-center">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M4 17h8M4 17l4-10 4 10M12 7h8M12 17h8" />
             </svg>
           </div>
-          <span className="font-nunito text-xl font-bold text-slate-900">
+          <span className="font-nunito text-xl font-bold -blue-900">
             VendorBridge
           </span>
         </div>
 
         {/* Avatar placeholder */}
-        <div className="w-24 h-24 rounded-full border-2 border-dashed border-slate-300 flex items-center justify-center mx-auto mb-8 bg-gradient-to-br from-blue-50 to-teal-50 hover:border-teal-500 transition-colors duration-300">
-          <User size={40} className="text-slate-400" />
+        <div className="w-24 h-24 rounded-full border-2 border-dashed -blue-100 flex items-center justify-center mx-auto mb-8 bg-gradient-to-br from-blue-50 to-teal-50 hover:-blue-600 transition-colors duration-300">
+          <User size={40} className="-blue-400" />
         </div>
 
         <form onSubmit={handleSubmit}>
           {/* Username */}
           <div className="mb-4">
-            <label className="block text-sm font-medium text-slate-600 mb-2 font-inter">
+            <label className="block text-sm font-medium -blue-600 mb-2 font-inter">
               Username
             </label>
             <div className="relative">
               <User
                 size={18}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                className="absolute left-3 top-1/2 -translate-y-1/2 -blue-400"
               />
               <input
                 type="text"
                 placeholder="Enter username"
-                className="input-field pl-10 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200"
+                className="input-field pl-10 focus:ring-2 focus:-blue-600 focus:-blue-600 transition-all duration-200"
                 value={form.username}
                 onChange={(e) => setForm({ ...form, username: e.target.value })}
               />
@@ -76,18 +76,18 @@ export default function Login() {
 
           {/* Password */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-slate-600 mb-2 font-inter">
+            <label className="block text-sm font-medium -blue-600 mb-2 font-inter">
               Password
             </label>
             <div className="relative">
               <Lock
                 size={18}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                className="absolute left-3 top-1/2 -translate-y-1/2 -blue-400"
               />
               <input
                 type="password"
                 placeholder="Enter password"
-                className="input-field pl-10 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all duration-200"
+                className="input-field pl-10 focus:ring-2 focus:-blue-600 focus:-blue-600 transition-all duration-200"
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
               />
@@ -95,7 +95,7 @@ export default function Login() {
           </div>
 
           {error && (
-            <div className="text-red-600 text-sm mb-4 font-inter bg-red-50 border border-red-200 rounded-lg px-4 py-2">
+            <div className="-blue-600 text-sm mb-4 font-inter -blue-100 border -blue-100 rounded-lg px-4 py-2">
               {error}
             </div>
           )}
@@ -103,7 +103,7 @@ export default function Login() {
           {/* Login Button */}
           <button
             type="submit"
-            className="btn-primary w-full justify-center mb-4 hover:bg-teal-700 active:scale-[0.98] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
+            className="btn-primary w-full justify-center mb-4 hover:-blue-700 active:scale-[0.98] transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
             disabled={loading}
           >
             {loading ? (
@@ -120,18 +120,18 @@ export default function Login() {
         {/* Forgot password */}
         <button
           onClick={() => {}}
-          className="text-teal-600 text-sm font-inter font-medium hover:text-teal-700 transition-colors duration-200 mb-4"
+          className="-blue-600 text-sm font-inter font-medium hover:-blue-700 transition-colors duration-200 mb-4"
         >
           Forgot password?
         </button>
 
-        <div className="mt-5 pt-4 border-t border-slate-200">
-          <span className="text-sm text-slate-600 font-inter">
+        <div className="mt-5 pt-4 border-t -blue-100">
+          <span className="text-sm -blue-600 font-inter">
             Don't have an account?{' '}
           </span>
           <button
             onClick={() => navigate('/register')}
-            className="text-teal-600 text-sm font-inter font-semibold hover:text-teal-700 transition-colors duration-200"
+            className="-blue-600 text-sm font-inter font-semibold hover:-blue-700 transition-colors duration-200"
           >
             Register
           </button>

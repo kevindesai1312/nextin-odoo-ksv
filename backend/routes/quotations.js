@@ -36,4 +36,29 @@ router.route('/')
     }
   });
 
+router.route('/:id')
+  .put(protect, async (req, res) => {
+    try {
+      const quotation = await Quotation.findById(req.params.id);
+      if (!quotation) return res.status(404).json({ message: 'Quotation not found' });
+      
+      const rfq = await RFQ.findById(quotation.rfqId);
+      if (!rfq) return res.status(404).json({ message: 'Parent RFQ not found' });
+      
+      if (new Date() > new Date(rfq.deadline)) {
+        return res.status(400).json({ message: 'RFQ deadline has passed, cannot update quote' });
+      }
+
+      if (quotation.status === 'Selected' || quotation.status === 'Rejected') {
+        return res.status(400).json({ message: 'Quotation is already processed' });
+      }
+
+      const updated = await Quotation.findByIdAndUpdate(req.params.id, { ...req.body, submittedAt: new Date() }, { new: true });
+      await logActivity(req, 'Quotation', 'Updated Quotation', 'quotations', updated._id, { rfqId: rfq._id });
+      res.json({...updated.toObject(), id: updated._id.toString()});
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
 export default router;

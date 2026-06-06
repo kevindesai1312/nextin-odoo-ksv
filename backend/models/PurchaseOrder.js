@@ -22,7 +22,7 @@ const poSchema = new mongoose.Schema({
   sgstAmount: { type: Number, default: 0 },
   igstAmount: { type: Number, default: 0 },
   grandTotal: { type: Number, required: true },
-  status: { type: String, enum: ['Active', 'Completed', 'Cancelled', 'Pending Payment', 'Paid'], default: 'Active' },
+  status: { type: String, enum: ['Draft', 'Sent', 'Accepted', 'Delivered', 'Closed', 'Active', 'Completed', 'Cancelled', 'Pending Payment', 'Paid'], default: 'Draft' },
   poDate: { type: Date, required: true },
   invoiceDate: Date,
   dueDate: Date,

@@ -15,10 +15,10 @@ export interface Vendor {
 
 const getStatusBadgeClass = (status: string) => {
   switch (status) {
-    case 'Active': return 'bg-emerald-50 text-emerald-700';
-    case 'Pending': return 'bg-amber-50 text-amber-700';
-    case 'Blocked': return 'bg-red-50 text-red-700';
-    default: return 'bg-slate-100 text-slate-700';
+    case 'Active': return '-blue-100 -blue-700';
+    case 'Pending': return '-blue-100 -blue-700';
+    case 'Blocked': return '-blue-100 -blue-700';
+    default: return '-blue-100 -blue-700';
   }
 };
 
@@ -149,7 +149,7 @@ export default function Vendors() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 -blue-600"></div>
       </div>
     );
   }
@@ -159,10 +159,10 @@ export default function Vendors() {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between md:items-end mb-6 gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 font-nunito tracking-tight mb-1">
+          <h1 className="text-2xl font-bold -blue-900 font-nunito tracking-tight mb-1">
             Vendors
           </h1>
-          <p className="text-sm text-slate-500 font-inter">
+          <p className="text-sm -blue-400 font-inter">
             Manage vendor profiles, registrations, and statuses
           </p>
         </div>
@@ -174,7 +174,7 @@ export default function Vendors() {
 
       {/* Search Bar */}
       <div className="relative mb-6 max-w-lg">
-        <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+        <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 -blue-400" />
         <input
           type="text"
           placeholder="Search by name, GST number, category..."
@@ -192,39 +192,39 @@ export default function Vendors() {
             onClick={() => setActiveTab(tab.label)}
             className={`px-4 py-2 rounded-full text-sm font-inter transition-all duration-200 ${
               activeTab === tab.label 
-                ? 'bg-teal-50 text-teal-700 font-semibold shadow-sm ring-1 ring-teal-600/20' 
-                : 'bg-white text-slate-600 font-medium hover:bg-slate-50 ring-1 ring-slate-200 shadow-sm'
+                ? '-blue-100 -blue-700 font-semibold shadow-sm ring-1 -blue-600/20' 
+                : 'bg-white -blue-600 font-medium hover:-blue-100 ring-1 -blue-100 shadow-sm'
             }`}
           >
-            {tab.label} <span className={`ml-1 px-1.5 py-0.5 rounded-full text-xs ${activeTab === tab.label ? 'bg-teal-100' : 'bg-slate-100 text-slate-500'}`}>{tab.count}</span>
+            {tab.label} <span className={`ml-1 px-1.5 py-0.5 rounded-full text-xs ${activeTab === tab.label ? '-blue-100' : '-blue-100 -blue-400'}`}>{tab.count}</span>
           </button>
         ))}
       </div>
 
       {/* Vendors Table */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+      <div className="bg-white rounded-2xl border -blue-100 shadow-sm overflow-hidden flex flex-col">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse min-w-[900px]">
             <thead>
-              <tr className="bg-slate-50/50 border-b border-slate-200">
-                <th className="py-4 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider font-inter">Vendor Name</th>
-                <th className="py-4 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider font-inter">Category</th>
-                <th className="py-4 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider font-inter">GST No.</th>
-                <th className="py-4 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider font-inter">Contact</th>
-                <th className="py-4 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider font-inter">Status</th>
-                <th className="py-4 px-6 text-xs font-semibold text-slate-500 uppercase tracking-wider font-inter text-right">Actions</th>
+              <tr className="-blue-100/50 border-b -blue-100">
+                <th className="py-4 px-6 text-xs font-semibold -blue-400 uppercase tracking-wider font-inter">Vendor Name</th>
+                <th className="py-4 px-6 text-xs font-semibold -blue-400 uppercase tracking-wider font-inter">Category</th>
+                <th className="py-4 px-6 text-xs font-semibold -blue-400 uppercase tracking-wider font-inter">GST No.</th>
+                <th className="py-4 px-6 text-xs font-semibold -blue-400 uppercase tracking-wider font-inter">Contact</th>
+                <th className="py-4 px-6 text-xs font-semibold -blue-400 uppercase tracking-wider font-inter">Status</th>
+                <th className="py-4 px-6 text-xs font-semibold -blue-400 uppercase tracking-wider font-inter text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filteredVendors.map((vendor) => (
-                <tr key={vendor.id} className="hover:bg-slate-50/50 transition-colors">
+                <tr key={vendor.id} className="hover:-blue-100/50 transition-colors">
                   <td className="py-4 px-6">
-                    <p className="text-sm font-medium text-slate-900 font-inter">{vendor.name}</p>
-                    <p className="text-xs text-slate-500 font-inter mt-0.5">{vendor.email}</p>
+                    <p className="text-sm font-medium -blue-900 font-inter">{vendor.name}</p>
+                    <p className="text-xs -blue-400 font-inter mt-0.5">{vendor.email}</p>
                   </td>
-                  <td className="py-4 px-6 text-sm text-slate-600 font-inter">{vendor.category}</td>
-                  <td className="py-4 px-6 text-sm font-mono text-slate-700">{vendor.gstNo}</td>
-                  <td className="py-4 px-6 text-sm font-mono text-slate-700">{vendor.contactNo}</td>
+                  <td className="py-4 px-6 text-sm -blue-600 font-inter">{vendor.category}</td>
+                  <td className="py-4 px-6 text-sm font-mono -blue-700">{vendor.gstNo}</td>
+                  <td className="py-4 px-6 text-sm font-mono -blue-700">{vendor.contactNo}</td>
                   <td className="py-4 px-6">
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium font-inter ${getStatusBadgeClass(vendor.status)}`}>
                       {vendor.status}
@@ -233,14 +233,14 @@ export default function Vendors() {
                   <td className="py-4 px-6 text-right">
                     <button 
                       onClick={() => openModal(vendor)}
-                      className="text-slate-400 hover:text-teal-600 transition-colors mr-3"
+                      className="-blue-400 hover:-blue-600 transition-colors mr-3"
                       title="Edit Vendor"
                     >
                       <Edit2 size={16} />
                     </button>
                     <button 
                       onClick={() => handleDelete(vendor.id, vendor.name)}
-                      className="text-slate-400 hover:text-red-600 transition-colors"
+                      className="-blue-400 hover:-blue-600 transition-colors"
                       title="Delete Vendor"
                     >
                       <Trash2 size={16} />
@@ -251,7 +251,7 @@ export default function Vendors() {
               
               {filteredVendors.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-slate-500 font-inter text-sm bg-slate-50/30">
+                  <td colSpan={6} className="py-12 text-center -blue-400 font-inter text-sm -blue-100/30">
                     No vendors found matching your criteria.
                   </td>
                 </tr>
@@ -263,15 +263,15 @@ export default function Vendors() {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 -blue-900/40 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-slate-900 font-nunito">
+            <div className="px-6 py-4 border-b -blue-100 flex items-center justify-between">
+              <h2 className="text-lg font-bold -blue-900 font-nunito">
                 {editingVendor ? 'Edit Vendor Profile' : 'Register New Vendor'}
               </h2>
               <button 
                 onClick={closeModal}
-                className="text-slate-400 hover:text-slate-600 transition-colors"
+                className="-blue-400 hover:-blue-600 transition-colors"
               >
                 <X size={20} />
               </button>
@@ -279,7 +279,7 @@ export default function Vendors() {
             
             <div className="p-6 overflow-y-auto">
               {formError && (
-                <div className="mb-6 bg-red-50 text-red-700 px-4 py-3 rounded-lg text-sm font-inter flex gap-3 items-start border border-red-100">
+                <div className="mb-6 -blue-100 -blue-700 px-4 py-3 rounded-lg text-sm font-inter flex gap-3 items-start border -blue-100">
                   <AlertCircle size={16} className="mt-0.5 shrink-0" />
                   <span>{formError}</span>
                 </div>
@@ -288,7 +288,7 @@ export default function Vendors() {
               <form id="vendorForm" onSubmit={handleSubmit} className="space-y-5">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1 font-inter">Vendor Name <span className="text-red-500">*</span></label>
+                    <label className="block text-sm font-medium -blue-700 mb-1 font-inter">Vendor Name <span className="-blue-600">*</span></label>
                     <input 
                       type="text" 
                       required
@@ -298,7 +298,7 @@ export default function Vendors() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1 font-inter">Category <span className="text-red-500">*</span></label>
+                    <label className="block text-sm font-medium -blue-700 mb-1 font-inter">Category <span className="-blue-600">*</span></label>
                     <input 
                       type="text" 
                       required
@@ -312,7 +312,7 @@ export default function Vendors() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1 font-inter">GST Number <span className="text-red-500">*</span></label>
+                    <label className="block text-sm font-medium -blue-700 mb-1 font-inter">GST Number <span className="-blue-600">*</span></label>
                     <input 
                       type="text" 
                       required
@@ -322,7 +322,7 @@ export default function Vendors() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1 font-inter">Status</label>
+                    <label className="block text-sm font-medium -blue-700 mb-1 font-inter">Status</label>
                     <select 
                       className="input-field"
                       value={formData.status}
@@ -337,7 +337,7 @@ export default function Vendors() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1 font-inter">Email Address <span className="text-red-500">*</span></label>
+                    <label className="block text-sm font-medium -blue-700 mb-1 font-inter">Email Address <span className="-blue-600">*</span></label>
                     <input 
                       type="email" 
                       required
@@ -347,7 +347,7 @@ export default function Vendors() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1 font-inter">Contact Number <span className="text-red-500">*</span></label>
+                    <label className="block text-sm font-medium -blue-700 mb-1 font-inter">Contact Number <span className="-blue-600">*</span></label>
                     <input 
                       type="text" 
                       required
@@ -359,7 +359,7 @@ export default function Vendors() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1 font-inter">Physical Address</label>
+                  <label className="block text-sm font-medium -blue-700 mb-1 font-inter">Physical Address</label>
                   <textarea 
                     className="input-field min-h-[80px] resize-y" 
                     value={formData.address}
@@ -369,7 +369,7 @@ export default function Vendors() {
               </form>
             </div>
             
-            <div className="px-6 py-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-3 rounded-b-2xl">
+            <div className="px-6 py-4 border-t -blue-100 -blue-100 flex justify-end gap-3 rounded-b-2xl">
               <button 
                 type="button"
                 onClick={closeModal}
