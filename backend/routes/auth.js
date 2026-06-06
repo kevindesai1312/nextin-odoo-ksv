@@ -43,7 +43,9 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ 
+      $or: [{ username: username }, { email: username }] 
+    });
 
     if (user && (await user.comparePassword(password))) {
       res.json({
@@ -65,6 +67,51 @@ router.post('/login', async (req, res) => {
 
 router.get('/me', protect, (req, res) => {
   res.json(req.user);
+});
+
+router.put('/profile', protect, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (user) {
+      user.firstName = req.body.firstName || user.firstName;
+      user.lastName = req.body.lastName || user.lastName;
+      user.phone = req.body.phone || user.phone;
+      user.country = req.body.country || user.country;
+      user.additionalInfo = req.body.additionalInfo || user.additionalInfo;
+      
+      if (req.body.email && req.body.email !== user.email) {
+        const emailExists = await User.findOne({ email: req.body.email });
+        if (emailExists) {
+          return res.status(400).json({ message: 'Email is already in use.' });
+        }
+        user.email = req.body.email;
+      }
+
+      if (req.body.password) {
+        user.password = req.body.password; // pre-save hook will hash it
+      }
+
+      const updatedUser = await user.save();
+
+      res.json({
+        _id: updatedUser._id,
+        username: updatedUser.username,
+        email: updatedUser.email,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
+        role: updatedUser.role,
+        phone: updatedUser.phone,
+        country: updatedUser.country,
+        additionalInfo: updatedUser.additionalInfo,
+        token: generateToken(updatedUser._id)
+      });
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
 export default router;

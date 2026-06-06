@@ -1,0 +1,4 @@
+{
+  "type": "HTTPS_REQ_ERROR",
+  "message": "getaddrinfo ENOTFOUND api-inference.huggingface.co"
+}

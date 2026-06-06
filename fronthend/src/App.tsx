@@ -13,6 +13,8 @@ import PurchaseOrders from './pages/PurchaseOrders';
 import Invoices from './pages/Invoices';
 import Reports from './pages/Reports';
 import Activity from './pages/Activity';
+import Profile from './pages/Profile';
+import Chatbot from './components/Chatbot';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 
 function AppLayout({ children }: { children: React.ReactNode }) {
@@ -30,6 +32,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
       >
         {children}
       </main>
+      <Chatbot />
     </div>
   );
 }
@@ -169,6 +172,16 @@ function App() {
             <ProtectedRoute>
               <AppLayout>
                 <Activity />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Profile />
               </AppLayout>
             </ProtectedRoute>
           }

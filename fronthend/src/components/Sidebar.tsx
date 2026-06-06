@@ -170,6 +170,24 @@ export default function Sidebar() {
             </div>
           </div>
         </div>
+        {/* Profile Button */}
+        <button
+          onClick={() => navigate('/profile')}
+          className="sidebar-item"
+          style={{
+            width: '100%',
+            border: 'none',
+            background: 'transparent',
+            color: '#1E3A8A',
+            textAlign: 'left',
+            marginTop: '4px',
+          }}
+        >
+          <UserCircle size={18} strokeWidth={2} />
+          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '14px' }}>
+            My Profile
+          </span>
+        </button>
         
         {/* Logout Button */}
         <button

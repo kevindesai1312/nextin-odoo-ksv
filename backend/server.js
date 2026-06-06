@@ -13,6 +13,7 @@ import roleRoutes from './routes/roles.js';
 import approvalRoutes from './routes/approvalWorkflows.js';
 import invoiceRoutes from './routes/invoices.js';
 import userRoutes from './routes/users.js';
+import chatRoutes from './routes/chat.js';
 
 dotenv.config();
 
@@ -39,6 +40,7 @@ app.use('/api/roles', roleRoutes);
 app.use('/api/approvals', approvalRoutes);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/chat', chatRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Backend is running' });
