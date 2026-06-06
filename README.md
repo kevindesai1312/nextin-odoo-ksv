@@ -1,1 +1,0 @@
-# nextin-odoo-ksv
