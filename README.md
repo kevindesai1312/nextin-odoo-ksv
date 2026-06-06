@@ -1,143 +1,99 @@
-# VendorBridge - Procurement Management System
+# VendorBridge
 
-A modern procurement management system built with React, TypeScript, and Vite.
+VendorBridge is a comprehensive full-stack B2B Procurement and Vendor Management platform. It streamlines the end-to-end procurement lifecycle from Request for Quotations (RFQs) to Purchase Orders and Invoices, featuring role-based workflows and an integrated AI assistant.
 
 ## Features
 
-- 🔐 **Authentication System** - Complete login and registration with user management
-- 📊 **Dashboard** - Overview of procurement activities
-- 👥 **Vendor Management** - Manage vendor information and relationships
-- 📝 **RFQs & Quotations** - Create and manage requests for quotations
-- ✅ **Approval Workflow** - Streamlined approval process
-- 🛒 **Purchase Orders** - Track and manage purchase orders
-- 💰 **Invoices** - Invoice management and tracking
-- 📈 **Reports** - Comprehensive reporting and analytics
-- 📱 **Responsive Design** - Works on desktop, tablet, and mobile devices
+*   **Role-Based Access Control (RBAC):** Tailored dashboards and workflows for **Admins**, **Managers**, **Officers**, and **Vendors**.
+*   **RFQ Management:** Create, broadcast, and track Requests for Quotations seamlessly.
+*   **Bidding System:** Vendors can easily submit competitive quotes against active RFQs.
+*   **Approval Workflows:** Multi-tiered approval processes for Managers to review and approve purchases.
+*   **Purchase Orders & Invoicing:** Automated PO generation and digital invoice tracking.
+*   **AI Chatbot Assistant:** Integrated Hugging Face AI (Zephyr model) to assist users navigating the procurement processes.
+*   **Profile Management:** All roles can edit personal details, contact info, and securely update passwords.
+*   **Interactive Dashboard:** Visual analytics, spend tracking, and activity monitoring using Recharts.
 
-## Authentication
+##  Tech Stack
 
-### Demo Credentials
-You can use these demo credentials to log in:
-- **Username:** admin
-- **Password:** admin123
+**Frontend:**
+*   React 18 (Vite)
+*   TypeScript
+*   Tailwind CSS (Vibrant Blue Palette UI)
+*   Lucide React (Icons)
+*   Recharts (Data Visualization)
+*   React Router DOM
 
-### Registration
-New users can register by:
-1. Clicking "Register" on the login page
-2. Filling in all required fields (First Name, Last Name, Email, Phone, Username, Password)
-3. Selecting a role (Admin, Officer, Manager, or Vendor)
-4. Providing additional information (optional)
-5. Clicking the Register button
+**Backend:**
+*   Node.js & Express.js
+*   MongoDB (Mongoose ODM)
+*   JSON Web Tokens (JWT) for Authentication
+*   Bcryptjs for Password Hashing
+*   Native Node.js HTTPS module (For AI Proxy routing)
 
-### Features
-- User data is stored in localStorage (persists across sessions)
-- Password validation (minimum 6 characters)
-- Password confirmation matching
-- Duplicate username/email detection
-- Automatic login after successful registration
-- Protected routes (requires authentication)
-- Logout functionality in sidebar
+##  Prerequisites
 
-## Getting Started
+Before you begin, ensure you have the following installed:
+*   [Node.js](https://nodejs.org/) (v18 or higher)
+*   [MongoDB](https://www.mongodb.com/) (Running locally or via MongoDB Atlas)
+*   A [Hugging Face](https://huggingface.co/) API token (with "Make calls to the serverless Inference API" permissions)
 
-### Prerequisites
-- Node.js 18+ 
-- npm or yarn
+##  Getting Started
 
-### Installation
+### 1. Clone the repository
+\`\`\`bash
+git clone https://github.com/kevindesai1312/nextin-odoo-ksv.git
+cd nextin-odoo-ksv
+\`\`\`
 
-```bash
-# Install dependencies
+### 2. Backend Setup
+\`\`\`bash
+cd backend
 npm install
+\`\`\`
 
-# Start development server
+Create a `.env` file inside the `backend` directory:
+\`\`\`env
+PORT=5000
+MONGODB_URI=mongodb://127.0.0.1:27017/vendorbridge
+JWT_SECRET=your_super_secret_jwt_key
+HF_API_KEY=your_huggingface_finegrained_token
+\`\`\`
+
+Run the database seeder (Optional - populates default roles & users):
+\`\`\`bash
+node seedUsers.js
+\`\`\`
+
+Start the backend server:
+\`\`\`bash
 npm run dev
+\`\`\`
 
-# Build for production
-npm run build
+### 3. Frontend Setup
+Open a new terminal window:
+\`\`\`bash
+cd fronthend
+npm install
+\`\`\`
 
-# Preview production build
-npm preview
-```
+Start the frontend development server:
+\`\`\`bash
+npm run dev
+\`\`\`
 
-The application will be available at http://localhost:3001 (or another port if 3000-3001 are in use).
+### 4. Access the Application
+Open your browser and navigate to `http://localhost:3000`.
 
-## Tech Stack
+**Default Test Credentials:**
+*   **Admin:** `kevindesai` / `password123`
+*   **Manager:** `harrymehta` / `password123`
+*   **Officer:** `prathemmehta` / `password123`
+*   **Vendor:** `adu@example.com` / `password123`
 
-- **Frontend Framework:** React 19
-- **Language:** TypeScript
-- **Build Tool:** Vite 7
-- **Routing:** React Router 7
-- **Styling:** Tailwind CSS
-- **UI Components:** Radix UI
-- **Icons:** Lucide React
-- **Forms:** React Hook Form + Zod
-- **Charts:** Recharts
+##  Security
+*   All passwords are cryptographically hashed using `bcryptjs` prior to database insertion.
+*   API endpoints are protected via JWT Bearer tokens.
+*   Sensitive Environment Variables (`.env`) are intentionally ignored via `.gitignore` to prevent secret leaks to GitHub.
 
-## Project Structure
-
-```
-src/
-├── components/       # Reusable UI components
-│   ├── ui/          # shadcn/ui components
-│   └── Sidebar.tsx  # Navigation sidebar
-├── contexts/         # React contexts
-│   └── AuthContext.tsx  # Authentication context
-├── pages/           # Page components
-│   ├── Login.tsx    # Login page
-│   ├── Register.tsx # Registration page
-│   ├── Dashboard.tsx
-│   └── ...
-├── hooks/           # Custom React hooks
-├── lib/             # Utility functions
-└── data/            # Demo data
-```
-
-## Available Scripts
-
-- `npm run dev` - Start development server with hot reload
-- `npm run build` - Build for production
-- `npm run lint` - Run ESLint
-- `npm run preview` - Preview production build
-
-## Development
-
-### Adding New Features
-
-1. Create new pages in `src/pages/`
-2. Add routes in `src/App.tsx` (wrap with `<ProtectedRoute>` if needed)
-3. Add navigation items in `src/components/Sidebar.tsx`
-4. Use Tailwind CSS classes for styling
-
-### Authentication Integration
-
-To protect a route, wrap it with the `ProtectedRoute` component:
-
-```tsx
-<Route
-  path="/your-page"
-  element={
-    <ProtectedRoute>
-      <AppLayout>
-        <YourPage />
-      </AppLayout>
-    </ProtectedRoute>
-  }
-/>
-```
-
-To use authentication in components:
-
-```tsx
-import { useAuth } from '../contexts/AuthContext';
-
-function MyComponent() {
-  const { user, logout, isAuthenticated } = useAuth();
-  
-  return <div>Welcome, {user?.username}</div>;
-}
-```
-
-## License
-
-MIT
+##  License
+This project is licensed under the MIT License.
